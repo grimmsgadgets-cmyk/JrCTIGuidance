@@ -1,0 +1,997 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Junior CTI Guide: Baselining and Tracing Adversary Behavior</title>
+  <meta name="description" content="A practical daily workflow for turning reporting into actor baselines, change assessments, and stakeholder action.">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  <header class="site-header" id="top">
+    <div class="header-inner">
+      <p class="eyebrow">CTI Field Guide</p>
+      <h1>Junior CTI Guide: Baselining and Tracing Adversary Behavior</h1>
+      <p class="subtitle">A practical daily workflow for turning reporting into actor baselines, change assessments, and stakeholder action.</p>
+      <div class="workflow-strip" aria-label="Repeatable CTI workflow">
+        <span>Observed behavior</span>
+        <span>Baseline comparison</span>
+        <span>Change assessment</span>
+        <span>Defensive decision</span>
+      </div>
+    </div>
+  </header>
+  <nav class="mobile-toc" aria-label="Mobile table of contents">
+    <button class="toc-toggle" type="button" aria-expanded="false" aria-controls="mobile-toc-list">Guide sections</button>
+    <ul id="mobile-toc-list">
+      <li><a href="#purpose">Purpose</a></li>
+<li><a href="#core-rule">Core Rule</a></li>
+<li><a href="#what-baseline-adversary-behavior-means">What “Baseline Adversary Behavior” Means</a></li>
+<li><a href="#guiding-principles">Guiding Principles</a></li>
+<li><a href="#daily-workflow">Daily Workflow</a></li>
+<li><a href="#step-1-pick-a-small-actor-set">Step 1: Pick a Small Actor Set</a></li>
+<li><a href="#step-2-create-one-actor-baseline-card">Step 2: Create One Actor Baseline Card</a></li>
+<li><a href="#step-3-collect-new-reporting">Step 3: Collect New Reporting</a></li>
+<li><a href="#step-4-convert-reports-into-behavior">Step 4: Convert Reports Into Behavior</a></li>
+<li><a href="#step-5-update-the-baseline-only-when-behavior-matters">Step 5: Update the Baseline Only When Behavior Matters</a></li>
+<li><a href="#step-6-maintain-a-normal-vs-changed-table">Step 6: Maintain a Normal vs. Changed Table</a></li>
+<li><a href="#step-7-trace-state-and-non-state-actors-differently">Step 7: Trace State and Non-State Actors Differently</a></li>
+<li><a href="#state-vs-non-state-is-not-binary">State vs. Non-State Is Not Binary</a></li>
+<li><a href="#step-8-translate-the-baseline-for-stakeholders">Step 8: Translate the Baseline for Stakeholders</a></li>
+<li><a href="#weekly-rhythm">Weekly Rhythm</a></li>
+<li><a href="#junior-analyst-day-one-assignment">Junior Analyst Day-One Assignment</a></li>
+<li><a href="#quality-checklist-before-you-send-work">Quality Checklist Before You Send Work</a></li>
+<li><a href="#common-failure-modes">Common Failure Modes</a></li>
+<li><a href="#appendix-a-reference-sources">Appendix A: Reference Sources</a></li>
+<li><a href="#appendix-b-short-version-for-junior-analysts">Appendix B: Short Version for Junior Analysts</a></li>
+    </ul>
+  </nav>
+  <div class="page-shell">
+    <aside class="sidebar" aria-label="Table of contents">
+      <div class="sidebar-inner">
+        <p class="toc-title">Contents</p>
+        <ol>
+          <li><a href="#purpose">Purpose</a></li>
+<li><a href="#core-rule">Core Rule</a></li>
+<li><a href="#what-baseline-adversary-behavior-means">What “Baseline Adversary Behavior” Means</a></li>
+<li><a href="#guiding-principles">Guiding Principles</a></li>
+<li><a href="#daily-workflow">Daily Workflow</a></li>
+<li><a href="#step-1-pick-a-small-actor-set">Step 1: Pick a Small Actor Set</a></li>
+<li><a href="#step-2-create-one-actor-baseline-card">Step 2: Create One Actor Baseline Card</a></li>
+<li><a href="#step-3-collect-new-reporting">Step 3: Collect New Reporting</a></li>
+<li><a href="#step-4-convert-reports-into-behavior">Step 4: Convert Reports Into Behavior</a></li>
+<li><a href="#step-5-update-the-baseline-only-when-behavior-matters">Step 5: Update the Baseline Only When Behavior Matters</a></li>
+<li><a href="#step-6-maintain-a-normal-vs-changed-table">Step 6: Maintain a Normal vs. Changed Table</a></li>
+<li><a href="#step-7-trace-state-and-non-state-actors-differently">Step 7: Trace State and Non-State Actors Differently</a></li>
+<li><a href="#state-vs-non-state-is-not-binary">State vs. Non-State Is Not Binary</a></li>
+<li><a href="#step-8-translate-the-baseline-for-stakeholders">Step 8: Translate the Baseline for Stakeholders</a></li>
+<li><a href="#weekly-rhythm">Weekly Rhythm</a></li>
+<li><a href="#junior-analyst-day-one-assignment">Junior Analyst Day-One Assignment</a></li>
+<li><a href="#quality-checklist-before-you-send-work">Quality Checklist Before You Send Work</a></li>
+<li><a href="#common-failure-modes">Common Failure Modes</a></li>
+<li><a href="#appendix-a-reference-sources">Appendix A: Reference Sources</a></li>
+<li><a href="#appendix-b-short-version-for-junior-analysts">Appendix B: Short Version for Junior Analysts</a></li>
+        </ol>
+      </div>
+    </aside>
+    <main id="main-content" class="content">
+      <article class="guide">
+        <section class="guide-section" id="purpose">
+<h2 id="purpose-heading">Purpose <a class="anchor-link" href="#purpose" aria-label="Link to Purpose">#</a></h2>
+<p>This guide teaches junior CTI analysts how to do day-to-day adversary baselining work.</p>
+<p>The goal is not to memorize actor names or copy vendor reports. The goal is to maintain a living answer to four questions:</p>
+<ol>
+<li>What does this actor normally do?</li>
+<li>What changed?</li>
+<li>Why might it have changed?</li>
+<li>What should defenders or stakeholders do differently?</li>
+</ol>
+<p>Use this guide when asked to baseline adversary behavior, trace how actor tradecraft evolves, or translate actor activity into useful defensive actions.</p>
+<hr>
+</section>
+<section class="guide-section" id="core-rule">
+<h2 id="core-rule-heading">Core Rule <a class="anchor-link" href="#core-rule" aria-label="Link to Core Rule">#</a></h2>
+<p>Do not start with attribution.</p>
+<p>Start with observed behavior.</p>
+<p>Bad:</p>
+<div class="code-panel" data-code-block="1"><div class="code-toolbar"><span class="badge badge-template">Template</span><button class="copy-button" type="button" data-copy-button>Copy</button></div><pre><code class="language-text">APT X is active again.</code></pre></div>
+<p>Better:</p>
+<div class="code-panel" data-code-block="2"><div class="code-toolbar"><span class="badge badge-template">Template</span><button class="copy-button" type="button" data-copy-button>Copy</button></div><pre><code class="language-text">A cluster associated with APT X is exploiting exposed edge devices against telecom and government targets. The behavior differs from its older phishing-heavy baseline. Confidence is moderate because reporting overlaps across two credible sources, but infrastructure evidence is limited.</code></pre></div>
+<p>The analyst&#x27;s job is to move from:</p>
+<div class="code-panel" data-code-block="3"><div class="code-toolbar"><span class="badge badge-template">Template</span><button class="copy-button" type="button" data-copy-button>Copy</button></div><pre><code class="language-text">News item → observed behavior → baseline comparison → change assessment → defensive decision</code></pre></div>
+<hr>
+</section>
+<section class="guide-section" id="what-baseline-adversary-behavior-means">
+<h2 id="what-baseline-adversary-behavior-means-heading">What “Baseline Adversary Behavior” Means <a class="anchor-link" href="#what-baseline-adversary-behavior-means" aria-label="Link to What “Baseline Adversary Behavior” Means">#</a></h2>
+<p>A baseline is the actor&#x27;s normal operating pattern.</p>
+<p>It is not a list of indicators. It is not a polished profile. It is not a vendor-report summary.</p>
+<p>A useful baseline captures:</p>
+<div class="table-scroll"><table>
+<thead><tr>
+<th>Question</th>
+<th>What to record</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>Who are they assessed to be?</td>
+<td>Actor, intrusion set, cluster, aliases, attribution confidence</td>
+</tr>
+<tr>
+<td>Why do they operate?</td>
+<td>Espionage, disruption, theft, influence, extortion, access brokerage</td>
+</tr>
+<tr>
+<td>Who do they target?</td>
+<td>Sectors, regions, technologies, victim types</td>
+</tr>
+<tr>
+<td>How do they usually gain access?</td>
+<td>Phishing, vulnerability exploitation, stolen credentials, supply chain, insiders</td>
+</tr>
+<tr>
+<td>What do they do after access?</td>
+<td>Discovery, credential theft, lateral movement, persistence, exfiltration, destruction</td>
+</tr>
+<tr>
+<td>What tools and infrastructure recur?</td>
+<td>Malware, C2 patterns, hosting, domains, loaders, exploit chains</td>
+</tr>
+<tr>
+<td>What behaviors are stable?</td>
+<td>Repeated TTPs, preferred timing, victimology, operational sequencing</td>
+</tr>
+<tr>
+<td>What behaviors are changing?</td>
+<td>New targets, new tooling, new tempo, new destructive actions, new public messaging</td>
+</tr>
+<tr>
+<td>What is the evidence quality?</td>
+<td>Confirmed, assessed, inferred, single-source, disputed</td>
+</tr>
+</tbody></table></div>
+<p>A good baseline allows you to recognize abnormality.</p>
+<p>If you do not know the actor&#x27;s normal, you cannot responsibly say something has changed.</p>
+<hr>
+</section>
+<section class="guide-section" id="guiding-principles">
+<h2 id="guiding-principles-heading">Guiding Principles <a class="anchor-link" href="#guiding-principles" aria-label="Link to Guiding Principles">#</a></h2>
+<h3 id="1-track-behavior-before-names-heading">1. Track behavior before names <a class="anchor-link" href="#1-track-behavior-before-names" aria-label="Link to 1. Track behavior before names">#</a></h3>
+<p>Focus first on what was observed:</p>
+<ul>
+<li>target set</li>
+<li>initial access</li>
+<li>tactics, techniques, and procedures</li>
+<li>malware/tools</li>
+<li>infrastructure</li>
+<li>sequencing</li>
+<li>evidence quality</li>
+<li>confidence level</li>
+</ul>
+<p>Actor names are useful, but they are unstable. Different vendors may use different names for overlapping activity. Treat names as labels, not truth.</p>
+<h3 id="2-intelligence-must-support-response-heading">2. Intelligence must support response <a class="anchor-link" href="#2-intelligence-must-support-response" aria-label="Link to 2. Intelligence must support response">#</a></h3>
+<p>A baseline is incomplete unless it helps someone make a better decision.</p>
+<p>Every actor note should eventually answer:</p>
+<ul>
+<li>What should SOC hunt for?</li>
+<li>What should IR preserve or contain first?</li>
+<li>What should vulnerability management prioritize?</li>
+<li>What should executives understand?</li>
+<li>What should legal or communications avoid overstating?</li>
+</ul>
+<h3 id="3-not-every-actor-matters-equally-heading">3. Not every actor matters equally <a class="anchor-link" href="#3-not-every-actor-matters-equally" aria-label="Link to 3. Not every actor matters equally">#</a></h3>
+<p>Do not treat every actor report as equally urgent.</p>
+<p>Assess:</p>
+<div class="table-scroll"><table>
+<thead><tr>
+<th>Dimension</th>
+<th>Question</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>Intent</td>
+<td>Are they likely to target us, our sector, our geography, our customers, or our vendors?</td>
+</tr>
+<tr>
+<td>Capability</td>
+<td>Can they execute the activity we are worried about?</td>
+</tr>
+<tr>
+<td>Opportunity</td>
+<td>Do they have a plausible path into our environment or supply chain?</td>
+</tr>
+<tr>
+<td>Activity</td>
+<td>Are they currently active or only historically relevant?</td>
+</tr>
+<tr>
+<td>Impact</td>
+<td>What happens if they succeed?</td>
+</tr>
+<tr>
+<td>Confidence</td>
+<td>How strong is the evidence?</td>
+</tr>
+</tbody></table></div>
+<h3 id="4-misp-opencti-style-principle-keep-objects-separate-heading">4. MISP / OpenCTI-style principle: keep objects separate <a class="anchor-link" href="#4-misp-opencti-style-principle-keep-objects-separate" aria-label="Link to 4. MISP / OpenCTI-style principle: keep objects separate">#</a></h3>
+<p>Do not mix the actor, campaign, malware, infrastructure, and report into one blob.</p>
+<p>Keep these separate:</p>
+<div class="table-scroll"><table>
+<thead><tr>
+<th>Object</th>
+<th>Meaning</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>Threat actor</td>
+<td>Who is believed to be behind activity</td>
+</tr>
+<tr>
+<td>Intrusion set</td>
+<td>Observed cluster of activity / behavior</td>
+</tr>
+<tr>
+<td>Campaign</td>
+<td>Time-bound operation</td>
+</tr>
+<tr>
+<td>Malware/tool</td>
+<td>Capability used</td>
+</tr>
+<tr>
+<td>Infrastructure</td>
+<td>Domains, IPs, certs, hosting, C2</td>
+</tr>
+<tr>
+<td>Target</td>
+<td>Victim sector, region, organization, or technology</td>
+</tr>
+<tr>
+<td>Report</td>
+<td>Source evidence</td>
+</tr>
+<tr>
+<td>Relationship</td>
+<td>Uses, targets, attributed-to, indicates, similar-to</td>
+</tr>
+</tbody></table></div>
+<p>This prevents sloppy attribution and makes your work easier to update later.</p>
+<hr>
+</section>
+<section class="guide-section priority daily" id="daily-workflow">
+<span class="section-badge badge-daily">Daily</span>
+<h2 id="daily-workflow-heading">Daily Workflow <a class="anchor-link" href="#daily-workflow" aria-label="Link to Daily Workflow">#</a></h2>
+<h3 id="daily-timebox-heading">Daily timebox <a class="anchor-link" href="#daily-timebox" aria-label="Link to Daily timebox">#</a></h3>
+<p>Recommended daily rhythm:</p>
+<div class="table-scroll"><table>
+<thead><tr>
+<th>Time</th>
+<th>Task</th>
+<th>Output</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>30–45 minutes</td>
+<td>Collect new reporting</td>
+<td>Short intake notes</td>
+</tr>
+<tr>
+<td>30 minutes</td>
+<td>Extract behavior and compare to baseline</td>
+<td>Updated actor card / change log</td>
+</tr>
+<tr>
+<td>30–45 minutes</td>
+<td>Translate to stakeholders</td>
+<td>SOC, IR, VM, executive, or MSSP action notes</td>
+</tr>
+</tbody></table></div>
+<p>Do not spend the entire day reading. The value is in extraction, comparison, and decision support.</p>
+<hr>
+</section>
+<section class="guide-section" id="step-1-pick-a-small-actor-set">
+<h2 id="step-1-pick-a-small-actor-set-heading">Step 1: Pick a Small Actor Set <a class="anchor-link" href="#step-1-pick-a-small-actor-set" aria-label="Link to Step 1: Pick a Small Actor Set">#</a></h2>
+<p>Do not track everyone.</p>
+<p>Start with 3–5 actors or clusters.</p>
+<p>Prioritize actors relevant to:</p>
+<ul>
+<li>your sector</li>
+<li>your region</li>
+<li>your customers</li>
+<li>your vendors</li>
+<li>your technology stack</li>
+<li>current geopolitical tensions</li>
+<li>current exploitation trends</li>
+<li>major ransomware / access broker ecosystems</li>
+</ul>
+<p>Example weekly watch list:</p>
+<div class="code-panel" data-code-block="4"><div class="code-toolbar"><span class="badge badge-template">Template</span><button class="copy-button" type="button" data-copy-button>Copy</button></div><pre><code class="language-text">Tracked this week:
+- Actor or cluster relevant to our sector
+- Actor exploiting technology we use
+- Ransomware / access broker ecosystem affecting our vertical
+- State-aligned actor active during current geopolitical tension
+- One learning-only actor for skill development</code></pre></div>
+<p>If you cannot explain why an actor is on the list, remove it.</p>
+<hr>
+</section>
+<section class="guide-section priority template" id="step-2-create-one-actor-baseline-card">
+<span class="section-badge badge-template">Template</span>
+<h2 id="step-2-create-one-actor-baseline-card-heading">Step 2: Create One Actor Baseline Card <a class="anchor-link" href="#step-2-create-one-actor-baseline-card" aria-label="Link to Step 2: Create One Actor Baseline Card">#</a></h2>
+<p>Create one card per actor or activity cluster.</p>
+<p>Use this template.</p>
+<div class="code-panel" data-code-block="5"><div class="code-toolbar"><span class="badge badge-template">Template</span><button class="copy-button" type="button" data-copy-button>Copy</button></div><pre><code class="language-markdown"># Actor Baseline: [Actor / Cluster Name]
+
+## Current Assessment
+[One paragraph: who they are assessed to be, what they usually do, who they target, why they matter, and confidence level.]
+
+## Normal Behavior
+- Target sectors:
+- Target regions:
+- Initial access:
+- Common TTPs:
+- Common tools:
+- Infrastructure patterns:
+- Usual objectives:
+- Tempo:
+- Reporting confidence:
+
+## Recent Changes
+- New targets:
+- New tools:
+- New TTPs:
+- New infrastructure:
+- New geopolitical relevance:
+- New reporting conflicts:
+
+## Defensive Relevance
+- Logs to check:
+- Hunts to run:
+- Detections to review:
+- Users/systems most exposed:
+- Stakeholders to brief:
+
+## Open Questions
+- What is still unclear?
+- What would increase confidence?
+- What collection should I do next?</code></pre></div>
+<p>This is a working note, not a final report.</p>
+<hr>
+</section>
+<section class="guide-section" id="step-3-collect-new-reporting">
+<span class="section-badge badge-template">Template</span>
+<h2 id="step-3-collect-new-reporting-heading">Step 3: Collect New Reporting <a class="anchor-link" href="#step-3-collect-new-reporting" aria-label="Link to Step 3: Collect New Reporting">#</a></h2>
+<p>Use a fixed source list so you do not drift into random browsing.</p>
+<p>Recommended source categories:</p>
+<div class="table-scroll"><table>
+<thead><tr>
+<th>Source Type</th>
+<th>Examples</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>Government</td>
+<td>CISA, NSA, NCSC, CERTs</td>
+</tr>
+<tr>
+<td>Vendor CTI</td>
+<td>Microsoft, Google / Mandiant, CrowdStrike, SentinelOne, Palo Alto Unit 42, Cisco Talos</td>
+</tr>
+<tr>
+<td>Structured knowledge</td>
+<td>MITRE ATT&amp;CK, MISP, OpenCTI</td>
+</tr>
+<tr>
+<td>Cyber news</td>
+<td>The Record, BleepingComputer, CyberScoop, Dark Reading</td>
+</tr>
+<tr>
+<td>Criminal ecosystem tracking</td>
+<td>ransomware.live, leak-site tracking, access broker reporting if available</td>
+</tr>
+<tr>
+<td>Internal data</td>
+<td>SIEM alerts, EDR alerts, tickets, phishing reports, vulnerability exposure, incident cases</td>
+</tr>
+</tbody></table></div>
+<p>Daily intake template:</p>
+<div class="code-panel" data-code-block="6"><div class="code-toolbar"><span class="badge badge-template">Template</span><button class="copy-button" type="button" data-copy-button>Copy</button></div><pre><code class="language-markdown"># Daily Collection - [Date]
+
+## New Items Found
+1. [Source] reported [actor/cluster] targeting [sector/region/technology] using [method].
+2. [Source] reported new malware/tool/infrastructure linked to [actor/cluster].
+3. [Source] linked activity to [geopolitical event/conflict/election/sanctions/vulnerability].
+
+## Relevant to Us?
+Yes / No / Maybe
+
+## Why?
+Because we use [technology], operate in [sector], support [customer type], have [exposure], or are adjacent to [target region/business process].</code></pre></div>
+<p>Keep this short.</p>
+<hr>
+</section>
+<section class="guide-section" id="step-4-convert-reports-into-behavior">
+<span class="section-badge badge-template">Template</span>
+<h2 id="step-4-convert-reports-into-behavior-heading">Step 4: Convert Reports Into Behavior <a class="anchor-link" href="#step-4-convert-reports-into-behavior" aria-label="Link to Step 4: Convert Reports Into Behavior">#</a></h2>
+<p>Do not copy summaries. Extract behavior.</p>
+<p>For every useful report, fill this out:</p>
+<div class="table-scroll"><table>
+<thead><tr>
+<th>Field</th>
+<th>Ask</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>Actor / cluster</td>
+<td>Who is reported? How confident is the label?</td>
+</tr>
+<tr>
+<td>Victimology</td>
+<td>Who is being targeted?</td>
+</tr>
+<tr>
+<td>Initial access</td>
+<td>How did they get in?</td>
+</tr>
+<tr>
+<td>Execution</td>
+<td>What did they run?</td>
+</tr>
+<tr>
+<td>Persistence</td>
+<td>How did they stay?</td>
+</tr>
+<tr>
+<td>Privilege escalation</td>
+<td>Did they elevate?</td>
+</tr>
+<tr>
+<td>Defense evasion</td>
+<td>What did they hide, disable, or bypass?</td>
+</tr>
+<tr>
+<td>Credential access</td>
+<td>What credentials did they seek?</td>
+</tr>
+<tr>
+<td>Discovery</td>
+<td>What did they enumerate?</td>
+</tr>
+<tr>
+<td>Lateral movement</td>
+<td>How did they move?</td>
+</tr>
+<tr>
+<td>Collection / exfiltration</td>
+<td>What did they collect or steal?</td>
+</tr>
+<tr>
+<td>Impact</td>
+<td>Did they destroy, encrypt, leak, disrupt, or manipulate?</td>
+</tr>
+<tr>
+<td>Objective</td>
+<td>Espionage, money, disruption, access sale, influence, prepositioning?</td>
+</tr>
+<tr>
+<td>Evidence</td>
+<td>What proves it?</td>
+</tr>
+<tr>
+<td>Confidence</td>
+<td>High, moderate, low, or unknown?</td>
+</tr>
+</tbody></table></div>
+<p>Minimum extraction note:</p>
+<div class="code-panel" data-code-block="7"><div class="code-toolbar"><span class="badge badge-template">Template</span><button class="copy-button" type="button" data-copy-button>Copy</button></div><pre><code class="language-markdown">## Behavior Extraction
+
+Source:
+Date:
+Actor / cluster:
+Confidence in label:
+
+Observed behavior:
+- Initial access:
+- Targeting:
+- Tools / malware:
+- TTPs:
+- Objective:
+- Evidence:
+
+Analyst note:
+[Does this match the actor&#x27;s baseline, expand it, or contradict it?]</code></pre></div>
+<hr>
+</section>
+<section class="guide-section" id="step-5-update-the-baseline-only-when-behavior-matters">
+<h2 id="step-5-update-the-baseline-only-when-behavior-matters-heading">Step 5: Update the Baseline Only When Behavior Matters <a class="anchor-link" href="#step-5-update-the-baseline-only-when-behavior-matters" aria-label="Link to Step 5: Update the Baseline Only When Behavior Matters">#</a></h2>
+<p>Do not update actor cards for every IOC.</p>
+<p>Update the baseline when the report changes what you believe about:</p>
+<ul>
+<li>who they target</li>
+<li>how they get in</li>
+<li>what they do after access</li>
+<li>what they want</li>
+<li>how urgent they are</li>
+<li>what defenders should do</li>
+<li>how confident attribution should be</li>
+</ul>
+<p>Decision rule:</p>
+<div class="code-panel" data-code-block="8"><div class="code-toolbar"><span class="badge badge-template">Template</span><button class="copy-button" type="button" data-copy-button>Copy</button></div><pre><code class="language-text">If the item changes the actor&#x27;s operating pattern, update the baseline.
+If it only adds temporary indicators, record it as supporting evidence or send it to tooling.</code></pre></div>
+<p>Example update:</p>
+<div class="code-panel" data-code-block="9"><div class="code-toolbar"><span class="badge badge-template">Template</span><button class="copy-button" type="button" data-copy-button>Copy</button></div><pre><code class="language-markdown">## Recent Change
+Date: [Date]
+
+New reporting shows the actor exploiting exposed edge devices rather than relying mainly on phishing. This may represent either a true tradecraft shift or reporting bias from recent incidents.
+
+Confidence: Moderate
+
+Defensive implication:
+Review internet-facing appliance exposure, VPN authentication logs, firewall logs, and recent patch status.</code></pre></div>
+<p>Weak update:</p>
+<div class="code-panel" data-code-block="10"><div class="code-toolbar"><span class="badge badge-template">Template</span><button class="copy-button" type="button" data-copy-button>Copy</button></div><pre><code class="language-markdown">Actor used IP address x.x.x.x.</code></pre></div>
+<p>That is usually not a baseline change.</p>
+<hr>
+</section>
+<section class="guide-section priority change-log" id="step-6-maintain-a-normal-vs-changed-table">
+<span class="section-badge badge-template">Template</span>
+<h2 id="step-6-maintain-a-normal-vs-changed-table-heading">Step 6: Maintain a Normal vs. Changed Table <a class="anchor-link" href="#step-6-maintain-a-normal-vs-changed-table" aria-label="Link to Step 6: Maintain a Normal vs. Changed Table">#</a></h2>
+<p>This is the most important working artifact.</p>
+<div class="code-panel" data-code-block="11"><div class="code-toolbar"><span class="badge badge-template">Template</span><button class="copy-button" type="button" data-copy-button>Copy</button></div><pre><code class="language-markdown"># Actor Change Log
+
+| Behavior Area | Baseline Normal | New Observation | Stable / Change / Unknown | Confidence | Defensive Implication |
+|---|---|---|---|---|---|
+| Initial access | Spearphishing, valid accounts | Edge-device exploitation | Possible change | Moderate | Review VPN/firewall appliance logs |
+| Targeting | Government / defense | Logistics / media | Expanded targeting | Moderate | Brief relevant business units |
+| Objective | Espionage | Destructive staging | Possible escalation | Low / Moderate | Monitor for wipers and backup tampering |
+| Tooling | Custom malware | LOLBins / RMM tools | Adaptation | High | Hunt for remote admin tool abuse |</code></pre></div>
+<p>This lets you brief change without rewriting full reports.</p>
+<hr>
+</section>
+<section class="guide-section priority trace" id="step-7-trace-state-and-non-state-actors-differently">
+<span class="section-badge badge-template">Template</span>
+<h2 id="step-7-trace-state-and-non-state-actors-differently-heading">Step 7: Trace State and Non-State Actors Differently <a class="anchor-link" href="#step-7-trace-state-and-non-state-actors-differently" aria-label="Link to Step 7: Trace State and Non-State Actors Differently">#</a></h2>
+<h3 id="state-linked-actor-questions-heading">State-linked actor questions <a class="anchor-link" href="#state-linked-actor-questions" aria-label="Link to State-linked actor questions">#</a></h3>
+<p>Ask:</p>
+<div class="code-panel" data-code-block="12"><div class="code-toolbar"><span class="badge badge-template">Template</span><button class="copy-button" type="button" data-copy-button>Copy</button></div><pre><code class="language-text">What geopolitical event might explain this activity?
+Is the target set aligned to state interests?
+Is this espionage, prepositioning, disruption, influence, or sabotage?
+Is the actor becoming louder, faster, or more destructive?
+Is attribution being overstated by media or vendors?
+Could this be state-directed, state-tolerated, state-aligned, or merely opportunistic?</code></pre></div>
+<p>State-linked assessment template:</p>
+<div class="code-panel" data-code-block="13"><div class="code-toolbar"><span class="badge badge-template">Template</span><button class="copy-button" type="button" data-copy-button>Copy</button></div><pre><code class="language-markdown">## State-Linked Actor Assessment
+
+Actor / cluster:
+Relevant geopolitical context:
+Observed target shift:
+Observed tradecraft shift:
+Likely objective:
+Who benefits:
+Confidence:
+Caveats:
+
+Assessment:
+[Write 3–5 sentences. Separate observed facts from assessed meaning.]</code></pre></div>
+<p>Example:</p>
+<div class="code-panel" data-code-block="14"><div class="code-toolbar"><span class="badge badge-template">Template</span><button class="copy-button" type="button" data-copy-button>Copy</button></div><pre><code class="language-markdown">Assessment:
+Recent activity may reflect conflict-driven collection against logistics and telecommunications. The behavior still resembles espionage more than destructive preparation. The target set aligns with state interests, but available reporting does not prove direct tasking. Confidence: moderate.</code></pre></div>
+<h3 id="non-state-actor-questions-heading">Non-state actor questions <a class="anchor-link" href="#non-state-actor-questions" aria-label="Link to Non-state actor questions">#</a></h3>
+<p>Ask:</p>
+<div class="code-panel" data-code-block="15"><div class="code-toolbar"><span class="badge badge-template">Template</span><button class="copy-button" type="button" data-copy-button>Copy</button></div><pre><code class="language-text">How are they making money?
+Who are they partnering with?
+Are they changing tools, affiliates, loaders, or targets?
+Are they using geopolitical language as branding?
+Are they actually state-aligned, or just opportunistic?
+Did their business model change?</code></pre></div>
+<p>Non-state assessment template:</p>
+<div class="code-panel" data-code-block="16"><div class="code-toolbar"><span class="badge badge-template">Template</span><button class="copy-button" type="button" data-copy-button>Copy</button></div><pre><code class="language-markdown">## Non-State Actor Assessment
+
+Actor / cluster:
+Likely motivation:
+Business model:
+Observed target logic:
+Tooling / affiliate changes:
+Possible geopolitical opportunism:
+Confidence:
+Caveats:
+
+Assessment:
+[Write 3–5 sentences. Separate criminal motive, ideological messaging, and evidence of state alignment.]</code></pre></div>
+<p>Example:</p>
+<div class="code-panel" data-code-block="17"><div class="code-toolbar"><span class="badge badge-template">Template</span><button class="copy-button" type="button" data-copy-button>Copy</button></div><pre><code class="language-markdown">Assessment:
+The group&#x27;s messaging has become politically themed, but the tradecraft and victim selection still look financially motivated. The most likely explanation is criminal opportunism with ideological branding. Treat as state-aligned only if stronger evidence appears. Confidence: moderate.</code></pre></div>
+<hr>
+</section>
+<section class="guide-section" id="state-vs-non-state-is-not-binary">
+<h2 id="state-vs-non-state-is-not-binary-heading">State vs. Non-State Is Not Binary <a class="anchor-link" href="#state-vs-non-state-is-not-binary" aria-label="Link to State vs. Non-State Is Not Binary">#</a></h2>
+<p>Do not force actors into clean categories.</p>
+<div class="table-scroll"><table>
+<thead><tr>
+<th>Category</th>
+<th>Reality</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>State actor</td>
+<td>May use contractors, proxies, patriotic hackers, criminal tooling</td>
+</tr>
+<tr>
+<td>Criminal actor</td>
+<td>May sell access to state actors or avoid certain targets for political reasons</td>
+</tr>
+<tr>
+<td>Hacktivist</td>
+<td>May be authentic, state-amplified, or a front</td>
+</tr>
+<tr>
+<td>Ransomware group</td>
+<td>May be financially motivated but geopolitically selective</td>
+</tr>
+<tr>
+<td>Access broker</td>
+<td>May supply both criminals and state-linked operators</td>
+</tr>
+</tbody></table></div>
+<p>Better question:</p>
+<div class="code-panel" data-code-block="18"><div class="code-toolbar"><span class="badge badge-template">Template</span><button class="copy-button" type="button" data-copy-button>Copy</button></div><pre><code class="language-text">What behavior is observed, what motive best explains it, who benefits, what evidence supports attribution, and what changed from the prior baseline?</code></pre></div>
+<hr>
+</section>
+<section class="guide-section priority stakeholder" id="step-8-translate-the-baseline-for-stakeholders">
+<span class="section-badge badge-template">Template</span>
+<h2 id="step-8-translate-the-baseline-for-stakeholders-heading">Step 8: Translate the Baseline for Stakeholders <a class="anchor-link" href="#step-8-translate-the-baseline-for-stakeholders" aria-label="Link to Step 8: Translate the Baseline for Stakeholders">#</a></h2>
+<p>Do not hand every stakeholder the same note.</p>
+<p>Translate the same actor change into different action language.</p>
+<h3 id="soc-version-heading">SOC version <a class="anchor-link" href="#soc-version" aria-label="Link to SOC version">#</a></h3>
+<div class="code-panel" data-code-block="19"><div class="code-toolbar"><span class="badge badge-template">Template</span><button class="copy-button" type="button" data-copy-button>Copy</button></div><pre><code class="language-markdown">## SOC Note
+
+Watch for:
+- [Behavior 1]
+- [Behavior 2]
+- [Behavior 3]
+
+Suggested hunt:
+[One concrete hunt idea]
+
+Useful logs:
+- [Log source 1]
+- [Log source 2]
+- [Log source 3]</code></pre></div>
+<p>Example:</p>
+<div class="code-panel" data-code-block="20"><div class="code-toolbar"><span class="badge badge-template">Template</span><button class="copy-button" type="button" data-copy-button>Copy</button></div><pre><code class="language-markdown">Watch for:
+- New VPN logins from unusual ASNs
+- MFA reset requests followed by privileged access
+- RMM tool installation
+- Suspicious PowerShell discovery commands
+
+Suggested hunt:
+Find accounts with password reset or MFA reset followed by new device enrollment within 24 hours.</code></pre></div>
+<h3 id="ir-version-heading">IR version <a class="anchor-link" href="#ir-version" aria-label="Link to IR version">#</a></h3>
+<div class="code-panel" data-code-block="21"><div class="code-toolbar"><span class="badge badge-template">Template</span><button class="copy-button" type="button" data-copy-button>Copy</button></div><pre><code class="language-markdown">## IR Note
+
+If this actor is suspected:
+1. Prioritize [evidence source].
+2. Preserve [critical logs].
+3. Check [common next move].
+4. Contain [likely persistence / access path].
+5. Validate [exfiltration / impact indicator].</code></pre></div>
+<p>Example:</p>
+<div class="code-panel" data-code-block="22"><div class="code-toolbar"><span class="badge badge-template">Template</span><button class="copy-button" type="button" data-copy-button>Copy</button></div><pre><code class="language-markdown">If this actor is suspected:
+1. Prioritize identity timeline.
+2. Review help desk tickets.
+3. Check privileged account changes.
+4. Look for RMM installation.
+5. Preserve SaaS audit logs early.</code></pre></div>
+<h3 id="vulnerability-management-version-heading">Vulnerability management version <a class="anchor-link" href="#vulnerability-management-version" aria-label="Link to Vulnerability management version">#</a></h3>
+<div class="code-panel" data-code-block="23"><div class="code-toolbar"><span class="badge badge-template">Template</span><button class="copy-button" type="button" data-copy-button>Copy</button></div><pre><code class="language-markdown">## Vulnerability Management Note
+
+Relevant exposure:
+- [Product / technology]
+- [Exploit status]
+- [Known actor relevance]
+
+Recommended action:
+1. Confirm exposure.
+2. Prioritize patching or mitigation.
+3. Validate compensating controls.
+4. Report unresolved exposure.</code></pre></div>
+<h3 id="executive-version-heading">Executive version <a class="anchor-link" href="#executive-version" aria-label="Link to Executive version">#</a></h3>
+<div class="code-panel" data-code-block="24"><div class="code-toolbar"><span class="badge badge-template">Template</span><button class="copy-button" type="button" data-copy-button>Copy</button></div><pre><code class="language-markdown">## Executive Note
+
+Recent reporting suggests [actor/cluster] is shifting toward [behavior].
+
+Business risk:
+[Plain-English risk]
+
+Recommended action:
+[One to three practical actions]
+
+Confidence:
+[High / Moderate / Low]</code></pre></div>
+<p>Example:</p>
+<div class="code-panel" data-code-block="25"><div class="code-toolbar"><span class="badge badge-template">Template</span><button class="copy-button" type="button" data-copy-button>Copy</button></div><pre><code class="language-markdown">Recent reporting suggests increased targeting of identity and help desk workflows.
+
+Business risk:
+The main risk is unauthorized access through support-process abuse, not malware alone.
+
+Recommended action:
+Review help desk verification, MFA reset procedures, and privileged access monitoring.
+
+Confidence:
+Moderate.</code></pre></div>
+<h3 id="legal-communications-version-heading">Legal / communications version <a class="anchor-link" href="#legal-communications-version" aria-label="Link to Legal / communications version">#</a></h3>
+<div class="code-panel" data-code-block="26"><div class="code-toolbar"><span class="badge badge-template">Template</span><button class="copy-button" type="button" data-copy-button>Copy</button></div><pre><code class="language-markdown">## Legal / Communications Note
+
+Do say:
+- Observed activity is consistent with [behavior / cluster] based on [evidence].
+- Attribution confidence is [level].
+- Defensive steps are underway.
+
+Do not say:
+- A government definitely did this unless evidence supports it.
+- The actor is confirmed if reporting is only circumstantial.
+- The organization is safe because indicators were blocked.</code></pre></div>
+<hr>
+</section>
+<section class="guide-section" id="weekly-rhythm">
+<span class="section-badge badge-weekly">Weekly</span>
+<h2 id="weekly-rhythm-heading">Weekly Rhythm <a class="anchor-link" href="#weekly-rhythm" aria-label="Link to Weekly Rhythm">#</a></h2>
+<h3 id="monday-choose-priorities-heading">Monday: choose priorities <a class="anchor-link" href="#monday-choose-priorities" aria-label="Link to Monday: choose priorities">#</a></h3>
+<div class="code-panel" data-code-block="27"><div class="code-toolbar"><span class="badge badge-template">Template</span><button class="copy-button" type="button" data-copy-button>Copy</button></div><pre><code class="language-text">Which actors matter this week?
+Which geopolitical events matter?
+Which vulnerabilities matter?
+Which internal systems are exposed?
+Which stakeholders need updates?</code></pre></div>
+<h3 id="tuesdaythursday-collect-extract-compare-update-heading">Tuesday–Thursday: collect, extract, compare, update <a class="anchor-link" href="#tuesdaythursday-collect-extract-compare-update" aria-label="Link to Tuesday–Thursday: collect, extract, compare, update">#</a></h3>
+<div class="code-panel" data-code-block="28"><div class="code-toolbar"><span class="badge badge-template">Template</span><button class="copy-button" type="button" data-copy-button>Copy</button></div><pre><code class="language-text">Daily reporting → behavior extraction → baseline update → stakeholder action</code></pre></div>
+<h3 id="friday-write-one-weekly-movement-brief-heading">Friday: write one weekly movement brief <a class="anchor-link" href="#friday-write-one-weekly-movement-brief" aria-label="Link to Friday: write one weekly movement brief">#</a></h3>
+<div class="code-panel" data-code-block="29"><div class="code-toolbar"><span class="badge badge-template">Template</span><button class="copy-button" type="button" data-copy-button>Copy</button></div><pre><code class="language-markdown"># Weekly Actor Movement Brief
+
+## Biggest Change
+[Actor / cluster] appears to be shifting from [old behavior] to [new behavior].
+
+## Why It Matters
+This affects [sector/system/business process].
+
+## Evidence
+- [Source 1]
+- [Source 2]
+- [Internal relevance]
+
+## Confidence
+[High / Moderate / Low]
+
+## Recommended Action
+1. [Action]
+2. [Action]
+3. [Action]
+
+## Open Questions
+- [Question]
+- [Question]</code></pre></div>
+<hr>
+</section>
+<section class="guide-section" id="junior-analyst-day-one-assignment">
+<h2 id="junior-analyst-day-one-assignment-heading">Junior Analyst Day-One Assignment <a class="anchor-link" href="#junior-analyst-day-one-assignment" aria-label="Link to Junior Analyst Day-One Assignment">#</a></h2>
+<p>Pick one actor only.</p>
+<p>Do not write a full report.</p>
+<p>Produce four artifacts:</p>
+<ol>
+<li>Actor baseline card</li>
+<li>Normal-vs-changed table</li>
+<li>Stakeholder translation note</li>
+<li>Open-question list</li>
+</ol>
+<p>Use this final template.</p>
+<div class="code-panel" data-code-block="30"><div class="code-toolbar"><span class="badge badge-template">Template</span><button class="copy-button" type="button" data-copy-button>Copy</button></div><pre><code class="language-markdown"># Daily Adversary Behavior Review
+
+Date:
+Analyst:
+Actor / cluster reviewed:
+
+## 1. Why This Actor Matters
+[Sector, geography, technology, customer, vendor, or geopolitical relevance.]
+
+## 2. New Reporting
+| Source | Date | New Behavior | Target | Confidence |
+|---|---|---|---|---|
+|  |  |  |  |  |
+
+## 3. Baseline Comparison
+| Normal Behavior | New Observation | Stable / Change / Unknown | Why It Matters |
+|---|---|---|---|
+|  |  |  |  |
+
+## 4. State / Non-State Assessment
+| Likely Type | Motivation | Evidence | Caveat |
+|---|---|---|---|
+|  |  |  |  |
+
+## 5. Defensive Translation
+
+### SOC
+- 
+
+### IR
+- 
+
+### Vulnerability Management
+- 
+
+### Executives
+- 
+
+## 6. Open Questions
+- 
+
+## 7. Tomorrow&#x27;s Collection Priorities
+- </code></pre></div>
+<hr>
+</section>
+<section class="guide-section" id="quality-checklist-before-you-send-work">
+<h2 id="quality-checklist-before-you-send-work-heading">Quality Checklist Before You Send Work <a class="anchor-link" href="#quality-checklist-before-you-send-work" aria-label="Link to Quality Checklist Before You Send Work">#</a></h2>
+<p>Before you hand off your note, check:</p>
+<div class="table-scroll"><table>
+<thead><tr>
+<th>Check</th>
+<th>Pass?</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>Did I separate observed facts from assessment?</td>
+<td></td>
+</tr>
+<tr>
+<td>Did I include confidence language?</td>
+<td></td>
+</tr>
+<tr>
+<td>Did I compare new behavior against baseline normal?</td>
+<td></td>
+</tr>
+<tr>
+<td>Did I avoid overclaiming attribution?</td>
+<td></td>
+</tr>
+<tr>
+<td>Did I avoid dumping IOCs without context?</td>
+<td></td>
+</tr>
+<tr>
+<td>Did I translate the finding for at least one stakeholder?</td>
+<td></td>
+</tr>
+<tr>
+<td>Did I identify what evidence would change my assessment?</td>
+<td></td>
+</tr>
+<tr>
+<td>Did I record open questions?</td>
+<td></td>
+</tr>
+</tbody></table></div>
+<p>If most boxes are empty, the work is not CTI yet. It is just note-taking.</p>
+<hr>
+</section>
+<section class="guide-section priority warning" id="common-failure-modes">
+<span class="section-badge badge-warning">Warning</span>
+<h2 id="common-failure-modes-heading">Common Failure Modes <a class="anchor-link" href="#common-failure-modes" aria-label="Link to Common Failure Modes">#</a></h2>
+<h3 id="failure-mode-1-actor-name-obsession-heading">Failure Mode 1: Actor-name obsession <a class="anchor-link" href="#failure-mode-1-actor-name-obsession" aria-label="Link to Failure Mode 1: Actor-name obsession">#</a></h3>
+<p>Weak:</p>
+<div class="code-panel" data-code-block="31"><div class="code-toolbar"><span class="badge badge-template">Template</span><button class="copy-button" type="button" data-copy-button>Copy</button></div><pre><code class="language-text">APT X is active.</code></pre></div>
+<p>Better:</p>
+<div class="code-panel" data-code-block="32"><div class="code-toolbar"><span class="badge badge-template">Template</span><button class="copy-button" type="button" data-copy-button>Copy</button></div><pre><code class="language-text">A cluster associated with APT X is targeting exposed appliances in sectors relevant to us. The behavior may indicate a shift in initial access. Confidence is moderate.</code></pre></div>
+<h3 id="failure-mode-2-ioc-dumping-heading">Failure Mode 2: IOC dumping <a class="anchor-link" href="#failure-mode-2-ioc-dumping" aria-label="Link to Failure Mode 2: IOC dumping">#</a></h3>
+<p>Weak:</p>
+<div class="code-panel" data-code-block="33"><div class="code-toolbar"><span class="badge badge-template">Template</span><button class="copy-button" type="button" data-copy-button>Copy</button></div><pre><code class="language-text">Here are 50 IP addresses.</code></pre></div>
+<p>Better:</p>
+<div class="code-panel" data-code-block="34"><div class="code-toolbar"><span class="badge badge-template">Template</span><button class="copy-button" type="button" data-copy-button>Copy</button></div><pre><code class="language-text">The actor is using short-lived VPS infrastructure for C2. Blocking the listed IPs may help tactically, but defenders should also hunt for beaconing patterns, unusual outbound connections, and related process behavior.</code></pre></div>
+<h3 id="failure-mode-3-no-stakeholder-translation-heading">Failure Mode 3: No stakeholder translation <a class="anchor-link" href="#failure-mode-3-no-stakeholder-translation" aria-label="Link to Failure Mode 3: No stakeholder translation">#</a></h3>
+<p>Weak:</p>
+<div class="code-panel" data-code-block="35"><div class="code-toolbar"><span class="badge badge-template">Template</span><button class="copy-button" type="button" data-copy-button>Copy</button></div><pre><code class="language-text">The actor uses valid accounts.</code></pre></div>
+<p>Better:</p>
+<div class="code-panel" data-code-block="36"><div class="code-toolbar"><span class="badge badge-template">Template</span><button class="copy-button" type="button" data-copy-button>Copy</button></div><pre><code class="language-text">Because the actor commonly abuses valid accounts, SOC should review abnormal login behavior, MFA reset events, privileged access changes, and new device enrollments.</code></pre></div>
+<h3 id="failure-mode-4-treating-reporting-as-proof-heading">Failure Mode 4: Treating reporting as proof <a class="anchor-link" href="#failure-mode-4-treating-reporting-as-proof" aria-label="Link to Failure Mode 4: Treating reporting as proof">#</a></h3>
+<p>Weak:</p>
+<div class="code-panel" data-code-block="37"><div class="code-toolbar"><span class="badge badge-template">Template</span><button class="copy-button" type="button" data-copy-button>Copy</button></div><pre><code class="language-text">This is definitely state-directed.</code></pre></div>
+<p>Better:</p>
+<div class="code-panel" data-code-block="38"><div class="code-toolbar"><span class="badge badge-template">Template</span><button class="copy-button" type="button" data-copy-button>Copy</button></div><pre><code class="language-text">The activity aligns with state interests and overlaps with previously reported tradecraft, but available evidence does not prove direct state tasking. Confidence: moderate.</code></pre></div>
+<h3 id="failure-mode-5-no-baseline-comparison-heading">Failure Mode 5: No baseline comparison <a class="anchor-link" href="#failure-mode-5-no-baseline-comparison" aria-label="Link to Failure Mode 5: No baseline comparison">#</a></h3>
+<p>Weak:</p>
+<div class="code-panel" data-code-block="39"><div class="code-toolbar"><span class="badge badge-template">Template</span><button class="copy-button" type="button" data-copy-button>Copy</button></div><pre><code class="language-text">The actor used a new malware family.</code></pre></div>
+<p>Better:</p>
+<div class="code-panel" data-code-block="40"><div class="code-toolbar"><span class="badge badge-template">Template</span><button class="copy-button" type="button" data-copy-button>Copy</button></div><pre><code class="language-text">The actor historically relied on credential theft and living-off-the-land execution. New reporting of custom malware may represent a tooling expansion, but more evidence is needed before treating it as a durable tradecraft shift.</code></pre></div>
+<hr>
+</section>
+<section class="guide-section priority reference" id="appendix-a-reference-sources">
+<span class="section-badge badge-reference">Reference</span>
+<h2 id="appendix-a-reference-sources-heading">Appendix A: Reference Sources <a class="anchor-link" href="#appendix-a-reference-sources" aria-label="Link to Appendix A: Reference Sources">#</a></h2>
+<p>These references support the workflow and terminology used in this guide.</p>
+<h3 id="sans-for478-heading">SANS FOR478 <a class="anchor-link" href="#sans-for478" aria-label="Link to SANS FOR478">#</a></h3>
+<p>SANS FOR478 describes Day 2 as covering the anatomy of cyber operations, tracing how state and non-state actor tradecraft evolves during geopolitical tensions and conflict, baselining adversary behavior, media/research perils, and mapping workflows to stakeholder audiences.</p>
+<p>Reference:</p>
+<ul>
+<li>SANS FOR478: Cyber Threat Intelligence Foundations</li>
+</ul>
+<p><a href="https://www.sans.org/cyber-security-courses/cyber-threat-intelligence-foundations-training">https://www.sans.org/cyber-security-courses/cyber-threat-intelligence-foundations-training</a></p>
+<h3 id="mitre-attck-heading">MITRE ATT&amp;CK <a class="anchor-link" href="#mitre-attck" aria-label="Link to MITRE ATT&amp;CK">#</a></h3>
+<p>MITRE ATT&amp;CK is useful for recording adversary behavior using tactics and techniques based on observed activity. ATT&amp;CK group pages are useful, but analysts should treat group names carefully because naming and scope can differ across organizations.</p>
+<p>References:</p>
+<ul>
+<li>MITRE ATT&amp;CK Groups</li>
+</ul>
+<p><a href="https://attack.mitre.org/groups/">https://attack.mitre.org/groups/</a></p>
+<ul>
+<li>Getting Started with ATT&amp;CK: Threat Intelligence</li>
+</ul>
+<p><a href="https://medium.com/mitre-attack/getting-started-with-mitre-att-ck-threat-intelligence-4eb205be4b2f">https://medium.com/mitre-attack/getting-started-with-mitre-att-ck-threat-intelligence-4eb205be4b2f</a></p>
+<h3 id="opencti-heading">OpenCTI <a class="anchor-link" href="#opencti" aria-label="Link to OpenCTI">#</a></h3>
+<p>OpenCTI helps structure CTI by separating threats, intrusion sets, campaigns, malware/tools, infrastructure, sectors, attack patterns, and relationships.</p>
+<p>References:</p>
+<ul>
+<li>OpenCTI Threats Documentation</li>
+</ul>
+<p><a href="https://docs.opencti.io/latest/usage/exploring-threats/">https://docs.opencti.io/latest/usage/exploring-threats/</a></p>
+<ul>
+<li>OpenCTI Usage Overview</li>
+</ul>
+<p><a href="https://docs.opencti.io/latest/usage/overview/">https://docs.opencti.io/latest/usage/overview/</a></p>
+<h3 id="misp-galaxy-heading">MISP Galaxy <a class="anchor-link" href="#misp-galaxy" aria-label="Link to MISP Galaxy">#</a></h3>
+<p>MISP Galaxy provides a way to represent larger CTI entities such as threat actors, tools, ransomware, and ATT&amp;CK matrices as clusters that can be linked to events or attributes.</p>
+<p>References:</p>
+<ul>
+<li>MISP Galaxy</li>
+</ul>
+<p><a href="https://misp-galaxy.org/">https://misp-galaxy.org/</a></p>
+<ul>
+<li>MISP Project Features</li>
+</ul>
+<p><a href="https://www.misp-project.org/features/">https://www.misp-project.org/features/</a></p>
+<ul>
+<li>CIRCL MISP Galaxy User Guide</li>
+</ul>
+<p><a href="https://www.circl.lu/doc/misp/galaxy/">https://www.circl.lu/doc/misp/galaxy/</a></p>
+<h3 id="intelligence-driven-incident-response-heading">Intelligence-Driven Incident Response <a class="anchor-link" href="#intelligence-driven-incident-response" aria-label="Link to Intelligence-Driven Incident Response">#</a></h3>
+<p>Intelligence-Driven Incident Response frames CTI as understanding adversaries, their capabilities, motivations, goals, and how they use cyber operations to accomplish those goals. The key operational lesson for juniors: intelligence should help incident response and defense teams act faster and with better context.</p>
+<p>References:</p>
+<ul>
+<li>O&#x27;Reilly / book listing</li>
+</ul>
+<p><a href="https://www.oreilly.com/library/view/intelligence-driven-incident-response/9781098120675/">https://www.oreilly.com/library/view/intelligence-driven-incident-response/9781098120675/</a></p>
+<h3 id="attribution-and-attck-heading">Attribution and ATT&amp;CK <a class="anchor-link" href="#attribution-and-attck" aria-label="Link to Attribution and ATT&amp;CK">#</a></h3>
+<p>Public CTI material on attribution and ATT&amp;CK is frequently useful for teaching juniors to be careful with attribution, actor names, and behavior-based analysis.</p>
+<p>References:</p>
+<ul>
+<li>Red Canary: The Attribution Game: When Knowing Your Adversary Matters</li>
+</ul>
+<p><a href="https://redcanary.com/blog/opinions-insights/apt-attribution-rsa/">https://redcanary.com/blog/opinions-insights/apt-attribution-rsa/</a></p>
+<h3 id="threat-assessment-heading">Threat Assessment <a class="anchor-link" href="#threat-assessment" aria-label="Link to Threat Assessment">#</a></h3>
+<p>CTI self-study material points analysts toward collection, threat assessment, intent, capability, and risk questions. This guide adapts that into daily actor-prioritization questions.</p>
+<p>Reference:</p>
+<ul>
+<li>Cyber Threat Intelligence Study Plan</li>
+</ul>
+<p><a href="https://klrgrz.medium.com/cyber-threat-intelligence-study-plan-c60484d319cb">Source link</a></p>
+<hr>
+</section>
+<section class="guide-section" id="appendix-b-short-version-for-junior-analysts">
+<h2 id="appendix-b-short-version-for-junior-analysts-heading">Appendix B: Short Version for Junior Analysts <a class="anchor-link" href="#appendix-b-short-version-for-junior-analysts" aria-label="Link to Appendix B: Short Version for Junior Analysts">#</a></h2>
+<p>Every day, answer this:</p>
+<div class="code-panel" data-code-block="41"><div class="code-toolbar"><span class="badge badge-template">Template</span><button class="copy-button" type="button" data-copy-button>Copy</button></div><pre><code class="language-text">What changed from this actor&#x27;s normal behavior, how confident am I, and what should someone do about it?</code></pre></div>
+<p>Use this sequence:</p>
+<div class="code-panel" data-code-block="42"><div class="code-toolbar"><span class="badge badge-template">Template</span><button class="copy-button" type="button" data-copy-button>Copy</button></div><pre><code class="language-text">1. Pick one actor.
+2. Read only relevant reporting.
+3. Extract behavior, not prose.
+4. Compare behavior to the baseline.
+5. Mark stable, changed, or unknown.
+6. Add confidence.
+7. Translate into action for SOC, IR, VM, executives, or customers.
+8. Record open questions.</code></pre></div>
+<p>If your note does not include behavior, confidence, baseline comparison, and action, it is not done.</p>
+</section>
+      </article>
+    </main>
+  </div>
+  <a class="back-to-top" href="#top" aria-label="Back to top">Top</a>
+  <script src="script.js"></script>
+</body>
+</html>
